@@ -1,0 +1,19 @@
+{
+  "name": "xmlparser",
+  "version": "1.0.0",
+  "description": "A feature-rich xml parser with CLI and GUI modes",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "start:cli": "node cli.js",
+    "build": "electron-builder"
+  },
+  "dependencies": {
+    "electron": "^33.2.1",
+    "fs-extra": "^10.0.0",
+    "yargs": "^17.3.1"
+  },
+  "devDependencies": {
+    "electron-builder": "^22.14.5"
+  }
+}

@@ -1,0 +1,36 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: monospace;
+    background-color: #f4f4f4;
+}
+
+.editor-container {
+    display: flex;
+    height: 100vh;
+}
+
+.line-numbers {
+    background-color: #f0f0f0;
+    padding: 10px 5px;
+    text-align: right;
+    color: #888;
+    overflow-y: hidden;
+    user-select: none;
+}
+
+.line-numbers span {
+    display: block;
+    line-height: 1.5;
+}
+
+.text-area {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    background-color: white;
+    overflow-y: auto;
+}
