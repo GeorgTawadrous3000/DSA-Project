@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const yargs = require('yargs');
 
 const argv = yargs
-  .usage('Usage: node src/cli.js [options]')
+  .usage('Usage: node cli.js [options]')
   .option('open', {
     describe: 'Open a file',
     alias: 'o',
