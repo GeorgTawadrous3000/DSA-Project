@@ -17,8 +17,6 @@
 //                   ex: </tagA> arbitrary text
 //                   ex: arbitrary text </tagA>
 
-const fs = require('fs-extra');
-
 
 // implement the Stack Data Structure
 class Stack {
