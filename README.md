@@ -13,8 +13,13 @@
 4. Start CLI mode: `npm run start:cli`
 
 ## CLI Usage
-- Open a file: `node cli.js -o filename.txt`
-- Save content: `node cli.js -s newfile.txt -c "Your content here"`
+- Open a file: `node cli.js -o filename.xml`
+- Save content: `node cli.js -s newfile.xml -c "Your content here"`
+- Validate an XML: `node cli.js -v filename.xml`
+- Correct an XML: `node cli.js -r filename.xml`
+- Beautify an XML: `node cli.js -b filename.xml`
+
+
 
 ## Dependencies
 - Electron
