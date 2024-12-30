@@ -1,3 +1,5 @@
+const { DOMParser } = require("xmldom");
+
 function XML2JSObject(data) {
   const xmlDoc = new DOMParser().parseFromString(data, "text/xml");
   const jsonResult = xmlToJson(xmlDoc.documentElement);

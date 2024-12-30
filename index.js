@@ -115,13 +115,13 @@ ipcMain.on("save-file-as", (event, content) => {
 
 ipcMain.on("render-file", (event, { content, currentFilePath }) => {
   const graph = getGraph(XML2JSObject(content));
-
+  console.log(graph);
   // Create a list of nodes
-  const nodes = Object.keys(adjacencyList).map((node) => ({ id: node }));
+  const nodes = Object.keys(graph).map((node) => ({ id: node }));
 
   // Create links from adjacency list
   const links = [];
-  for (const [source, targets] of Object.entries(adjacencyList)) {
+  for (const [source, targets] of Object.entries(graph)) {
     targets.forEach((target) => {
       links.push({ source, target });
     });
