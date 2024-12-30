@@ -18,7 +18,7 @@ function renderGraph(graph) {
   const canvas = d3.select("#network"),
     width = canvas.attr("width"),
     height = canvas.attr("height"),
-    r = 20,
+    r = 40,
     ctx = canvas.node().getContext("2d");
 
   const simulation = d3
@@ -26,7 +26,7 @@ function renderGraph(graph) {
     .force("x", d3.forceX(width / 2))
     .force("y", d3.forceY(height / 2))
     .force("collide", d3.forceCollide(r + 5))
-    .force("charge", d3.forceManyBody().strength(-400))
+    .force("charge", d3.forceManyBody().strength(-1600))
     .force(
       "link",
       d3.forceLink().id((d) => d.id)
@@ -40,6 +40,7 @@ function renderGraph(graph) {
     ctx.clearRect(0, 0, width, height);
 
     ctx.beginPath();
+    ctx.strokeStyle = "#2563eb";
     links.forEach(drawLink);
     ctx.stroke();
 
@@ -49,6 +50,7 @@ function renderGraph(graph) {
   }
 
   function drawNode(d) {
+    ctx.fillStyle = "#db2777";
     ctx.moveTo(d.x, d.y);
     ctx.arc(d.x, d.y, r, 0, 2 * Math.PI);
     //   ctx.fillStyle = "steelblue";
