@@ -32,7 +32,7 @@ function renderGraph(graph) {
       d3
         .forceLink(links)
         .id((d) => d.id)
-        .distance(150) // Adjust link distance for better layout
+        .distance(200) // Adjust link distance for better layout
     )
     .on("tick", update);
 
@@ -95,13 +95,13 @@ function renderGraph(graph) {
 
     ctx.beginPath();
     ctx.moveTo(
-      arrowX + arrowSize * Math.cos(angle - Math.PI / 6),
-      arrowY + arrowSize * Math.sin(angle - Math.PI / 6)
+      arrowX + arrowSize * Math.cos(angle - Math.PI / 5),
+      arrowY + arrowSize * Math.sin(angle - Math.PI / 5)
     );
     ctx.lineTo(targetX, targetY);
     ctx.lineTo(
-      arrowX + arrowSize * Math.cos(angle + Math.PI / 6),
-      arrowY + arrowSize * Math.sin(angle + Math.PI / 6)
+      arrowX + arrowSize * Math.cos(angle + Math.PI / 5),
+      arrowY + arrowSize * Math.sin(angle + Math.PI / 5)
     );
     ctx.fillStyle = "#2563eb"; // Arrow color (same as link color)
     ctx.fill();
