@@ -18,7 +18,7 @@
 //                   ex: arbitrary text </tagA>
 
 // implement the Stack Data Structure
-export class Stack {
+class Stack {
   constructor() {
     this.items = [];
   }
@@ -49,7 +49,7 @@ export class Stack {
 }
 
 // implement the validate() function, returns boolean true/false
-export function validate(file_text = null) {
+function validate(file_text = null) {
   if (file_text == null || file_text == "") return false;
 
   // split the file contents into lines
@@ -105,7 +105,7 @@ export function validate(file_text = null) {
 }
 
 // implement the correct() function, returns string with corrected xml data
-export function correct(file_text = null) {
+function correct(file_text = null) {
   if (file_text == null || file_text == "") return "";
 
   // create array to hold the corrected lines
@@ -185,7 +185,7 @@ export function correct(file_text = null) {
 }
 
 // implement the beautify() function, returns string with beautified xml data
-export function beautify(file_text = null) {
+function beautify(file_text = null) {
   if (file_text == null || file_text == "") return "";
 
   // create array to hold the beautified lines
@@ -244,4 +244,4 @@ export function beautify(file_text = null) {
   return lines_beautified.join("\n");
 }
 
-// module.exports = {Stack, validate, correct, beautify};
+module.exports = { Stack, validate, correct, beautify };
