@@ -83,6 +83,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return content;
   }
 
+  ipcRenderer.on("save-file", () => {
+    textArea.value = modifyCode(textArea.value);
+    ipcRenderer.send("save-file", {
+      content: textArea.value,
+      currentFilePath,
+    });
+  });
+
   ipcRenderer.on("render-file", () => {
     textArea.value = modifyCode(textArea.value);
     ipcRenderer.send("render-file", {

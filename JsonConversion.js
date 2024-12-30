@@ -1,4 +1,4 @@
-export function XML2JSObject(data) {
+function XML2JSObject(data) {
   const xmlDoc = new DOMParser().parseFromString(data, "text/xml");
   const jsonResult = xmlToJson(xmlDoc.documentElement);
   const rootElement = xmlDoc.documentElement.nodeName;
@@ -7,7 +7,7 @@ export function XML2JSObject(data) {
   return result;
 }
 
-export function XML2JSON(obj) {
+function XML2JSON(obj) {
   return JSON.stringify(XML2JSObject(obj), null, 2);
 }
 
@@ -56,6 +56,8 @@ function xmlToJson(xml) {
   }
   return obj;
 }
+
+module.exports = { XML2JSObject, XML2JSON };
 
 // const data = `
 // <users>

@@ -2,8 +2,11 @@ const { app, BrowserWindow, Menu, dialog, ipcMain } = require("electron");
 const fs = require("fs-extra");
 const path = require("path");
 const { validate, beautify, correct } = require("./ds/parsing");
+const { getGraph } = require("./Graph.js");
+const { XML2JSObject, XML2JSON } = require("./JsonConversion.js");
 
 let mainWindow;
+let secondWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -108,4 +111,39 @@ ipcMain.on("save-file-as", (event, content) => {
       event.reply("file-saved", result.filePath);
     }
   });
+});
+
+ipcMain.on("render-file", (event, { content, currentFilePath }) => {
+  const graph = getGraph(XML2JSObject(content));
+
+  // Create a list of nodes
+  const nodes = Object.keys(adjacencyList).map((node) => ({ id: node }));
+
+  // Create links from adjacency list
+  const links = [];
+  for (const [source, targets] of Object.entries(adjacencyList)) {
+    targets.forEach((target) => {
+      links.push({ source, target });
+    });
+  }
+
+  const graphData = { nodes, links };
+
+  secondWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+
+  secondWindow.loadFile("graph.html");
+
+  secondWindow.once("ready-to-show", () => {
+    secondWindow.show();
+    secondWindow.focus();
+  });
+
+  secondWindow.webContents.send("graph-data", graphData);
 });
