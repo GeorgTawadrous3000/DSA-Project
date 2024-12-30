@@ -6,59 +6,60 @@ const { ipcRenderer } = require("electron");
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOMContentLoaded"); // Debugging log
   ipcRenderer.on("graph-data", (_event, graphData) => {
-    console.log("Received graph data:", graphData); // Debugging log
     renderGraph(graphData);
   });
 });
 
 // Function to render a force-directed graph using D3.js
-function renderGraph(data) {
-  document.getElementById("chart").innerText = JSON.stringify(data);
+function renderGraph(graph) {
+  console.log("Rendering graph with data:", graph); // Debugging log
+  const { nodes, links } = graph;
 
-  //   console.log(data);
-  //   const width = 800;
-  //   const height = 600;
+  const canvas = d3.select("#network"),
+    width = canvas.attr("width"),
+    height = canvas.attr("height"),
+    r = 20,
+    ctx = canvas.node().getContext("2d");
 
-  //   const svg = d3
-  //     .select("#chart")
-  //     .append("svg")
-  //     .attr("width", width)
-  //     .attr("height", height);
+  const simulation = d3
+    .forceSimulation(nodes)
+    .force("x", d3.forceX(width / 2))
+    .force("y", d3.forceY(height / 2))
+    .force("collide", d3.forceCollide(r + 5))
+    .force("charge", d3.forceManyBody().strength(-400))
+    .force(
+      "link",
+      d3.forceLink().id((d) => d.id)
+    )
+    .on("tick", update);
 
-  //   const simulation = d3
-  //     .forceSimulation(data.nodes)
-  //     .force(
-  //       "link",
-  //       d3.forceLink(data.links).id((d) => d.id)
-  //     )
-  //     .force("charge", d3.forceManyBody())
-  //     .force("center", d3.forceCenter(width / 2, height / 2));
+  simulation.nodes(nodes);
+  simulation.force("link").links(links);
 
-  //   const link = svg
-  //     .append("g")
-  //     .selectAll("line")
-  //     .data(data.links)
-  //     .enter()
-  //     .append("line")
-  //     .attr("stroke-width", 2)
-  //     .attr("stroke", "#999");
+  function update() {
+    ctx.clearRect(0, 0, width, height);
 
-  //   const node = svg
-  //     .append("g")
-  //     .selectAll("circle")
-  //     .data(data.nodes)
-  //     .enter()
-  //     .append("circle")
-  //     .attr("r", 10)
-  //     .attr("fill", "#69b3a2");
+    ctx.beginPath();
+    links.forEach(drawLink);
+    ctx.stroke();
 
-  //   simulation.on("tick", () => {
-  //     link
-  //       .attr("x1", (d) => d.source.x)
-  //       .attr("y1", (d) => d.source.y)
-  //       .attr("x2", (d) => d.target.x)
-  //       .attr("y2", (d) => d.target.y);
+    ctx.beginPath();
+    graph.nodes.forEach(drawNode);
+    ctx.fill();
+  }
 
-  //     node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
-  //   });
+  function drawNode(d) {
+    ctx.moveTo(d.x, d.y);
+    ctx.arc(d.x, d.y, r, 0, 2 * Math.PI);
+    //   ctx.fillStyle = "steelblue";
+    //   ctx.fill();
+    //   ctx.stroke();
+  }
+
+  function drawLink(l) {
+    ctx.moveTo(l.source.x, l.source.y);
+    ctx.lineTo(l.target.x, l.target.y);
+  }
+
+  update();
 }
