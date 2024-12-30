@@ -7,7 +7,6 @@ const { XML2JSObject, XML2JSON } = require("./JsonConversion.js");
 
 let mainWindow;
 let secondWindow;
-
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
@@ -115,7 +114,6 @@ ipcMain.on("save-file-as", (event, content) => {
 
 ipcMain.on("render-file", (event, { content, currentFilePath }) => {
   const graph = getGraph(XML2JSObject(content));
-  console.log(graph);
   // Create a list of nodes
   const nodes = Object.keys(graph).map((node) => ({ id: node }));
 
@@ -128,6 +126,7 @@ ipcMain.on("render-file", (event, { content, currentFilePath }) => {
   }
 
   const graphData = { nodes, links };
+  // console.log(graphData);
 
   secondWindow = new BrowserWindow({
     width: 800,
@@ -138,12 +137,13 @@ ipcMain.on("render-file", (event, { content, currentFilePath }) => {
     },
   });
 
-  secondWindow.loadFile("graph.html");
+  secondWindow.loadFile("./graph.html");
 
-  secondWindow.once("ready-to-show", () => {
-    secondWindow.show();
-    secondWindow.focus();
+  // Wait until the second window finishes loading
+  secondWindow.webContents.once("did-finish-load", () => {
+    console.log("Sending graph data:", graphData); // Log data before sending
+    secondWindow.webContents.send("graph-data", graphData);
   });
 
-  secondWindow.webContents.send("graph-data", graphData);
+  secondWindow.webContents.openDevTools();
 });
