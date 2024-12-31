@@ -66,7 +66,7 @@ function validate(file_text = null) {
     // validate the xml text
     for(var i = 0; i < lines.length; i++) {
 
-        // remove leading/trainling spaces from the line
+        // remove leading/trailing spaces from the line
         lines[i] = lines[i].trim();
 
         // count num '<' in the line
@@ -81,10 +81,17 @@ function validate(file_text = null) {
 
             // check if the tag is opening <...>, closing </...>, or both <...> </...>
             // simply check if num '<' in the line is 2 then both, thus we ignore this case
+            // else if second character is '!' then it is comment and ignore it
+            // else if second character is '?' then it is start tag, thus check if it is at the beginning of the file or not
             // else if second character is not '/' then opening
             // else it is closing
             if(num_matches == 2) {
                 continue;
+            }
+            else if(lines[i][1] == '!') {
+            }
+            else if(lines[i][1] == '?') {
+                if(i != 0) return false; 
             }
             else if(lines[i][1] != '/') {
                 // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
@@ -131,7 +138,7 @@ function correct(file_text = null) {
     // correct the xml text
     for(var i = 0; i < lines.length; i++) {
 
-        // remove leading/trainling spaces from the line
+        // remove leading/trailing spaces from the line
         lines[i] = lines[i].trim();
 
         // count num '<' in the line
@@ -146,11 +153,19 @@ function correct(file_text = null) {
 
             // check if the tag is opening <...>, closing </...>, or both <...> </...>
             // simply check if num '<' in the line is 2 then both, thus we add the line to lines_corrected
+            // else if second character is '!' then it is a comment, thus add it as it is
+            // else if second character is '?' then it is a start tag, thus add it only if it is at the beginning of the file
             // else if second character is not '/' then opening, thus we push and add the line to lines_corrected
             // else it is closing, thus we correct errors (if any) then pop and add the line to lines_corrected
             if(num_matches == 2) {
                 lines_corrected[length_corrected++] = lines[i];
                 continue;
+            }
+            else if(lines[i][1] == '!') {
+                lines_corrected[length_corrected++] = lines[i];
+            }
+            else if(lines[i][1] == '?') {
+                if(i == 0) lines_corrected[length_corrected++] = lines[i];
             }
             else if(lines[i][1] != '/') {
                 // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
@@ -220,7 +235,7 @@ function beautify(file_text = null) {
     // beautify the xml text
     for(var i = 0; i < lines.length; i++) {
 
-        // remove leading/trainling spaces from the line
+        // remove leading/trailing spaces from the line
         lines[i] = lines[i].trim();
 
         // count num '<' in the line
@@ -235,9 +250,17 @@ function beautify(file_text = null) {
 
             // check if the tag is opening <...>, closing </...>, or both <...> </...>
             // simply check if num '<' in the line is 2 then both, thus it gets the indentation of the block it is in
+            // else if second character is '!' then comment, thus it gets the indentation of the block it is in
+            // else if second character is '?' then it is start tag, thus it gets the indentation of the block it is in
             // else if second character is not '/' then opening, thus it gets the indentation of the block it is in and we increment the indentation for the next elements
             // else it is closing, thus it gets an indentation less than the block it is in and we decrement the indentation for the next elements
             if(num_matches == 2) {
+                lines_beautified[length_beautified++] = '    '.repeat(current_indentation_level) + lines[i];
+            }
+            else if(lines[i][1] == '!') {
+                lines_beautified[length_beautified++] = '    '.repeat(current_indentation_level) + lines[i];
+            }
+            else if(lines[i][1] == '?') {
                 lines_beautified[length_beautified++] = '    '.repeat(current_indentation_level) + lines[i];
             }
             else if(lines[i][1] != '/') {
