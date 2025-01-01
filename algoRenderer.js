@@ -10,16 +10,19 @@ const {
 } = require("./algorithms");
 
 document.addEventListener("DOMContentLoaded", () => {
-  // console.log("DOMContentLoaded"); // Debugging log
+  //   console.log("DOMContentLoaded");
   ipcRenderer.on("algorithms", (event, xmlObject, graph, type) => {
     let res = null;
+    // console.log("receiving algorithm data:", xmlObject, graph, type);
 
     switch (type) {
       case "Most-influential":
         res = getmostinfluential(graph);
+        console.log(res);
         document.getElementById("result").textContent = res;
         break;
       case "Most-active":
+        console.log(graph);
         res = most_active(graph);
         document.getElementById("result").textContent = res;
         break;

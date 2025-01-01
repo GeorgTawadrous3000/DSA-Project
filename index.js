@@ -217,7 +217,7 @@ ipcMain.on("json-conversion", (event, { content, currentFilePath }) => {
 ipcMain.on("algorithms", (event, { content, currentFilePath, type }) => {
   const graph = getGraph(XML2JSObject(content));
   const xmlObject = XML2JSObject(content);
-  console.log("algo");
+  // console.log("algo");
   algoWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -226,10 +226,11 @@ ipcMain.on("algorithms", (event, { content, currentFilePath, type }) => {
       contextIsolation: false,
     },
   });
-  console.log("Type of algorithm:", type);
+  // console.log("Type of algorithm:", type);
   algoWindow.loadFile("./algo.html");
   algoWindow.webContents.once("did-finish-load", () => {
     algoWindow.webContents.send("algorithms", xmlObject, graph, type);
+    algoWindow.openDevTools();
   });
 });
 
