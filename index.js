@@ -229,7 +229,6 @@ ipcMain.on("algorithms", (event, { content, currentFilePath, type }) => {
   console.log("Type of algorithm:", type);
   algoWindow.loadFile("./algo.html");
   algoWindow.webContents.once("did-finish-load", () => {
-    console.log("Sending graph data for algorithms:", graphData); // Log data before sending
     algoWindow.webContents.send("algorithms", xmlObject, graph, type);
   });
 });

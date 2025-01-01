@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  ipcRenderer.on("algorithms", type, () => {
+  ipcRenderer.on("algorithms", (event, type) => {
     textArea.value = modifyCode(textArea.value);
     ipcRenderer.send("algorithms", {
       content: textArea.value,
