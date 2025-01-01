@@ -120,59 +120,52 @@ ipcMain.on('save-file-as', (event, content) => {
 });
 
 ipcMain.on('minify', (event, content) => {
+  const minified = minifyXML(content);
   dialog.showSaveDialog(mainWindow).then(result => {
     if (!result.canceled) {
-      fs.writeFileSync(result.filePath, content);
-      event.reply('file-saved', result.filePath);
+      fs.writeFileSync(result.filePath, minified);
+      let sentMap = {"content": minified,
+                    "path": result.filePath};
+      event.reply('minifiedFile', sentMap);
     }
   });
 });
 
+ipcMain.on('compress', (event, content) => {
+  const {encodedContent,tagsArray} = encodeXMLTags(content);
+  dialog.showSaveDialog(mainWindow).then(result => {
+    if (!result.canceled) {
+      fs.writeFileSync(result.filePath, encodedContent);
+      fs.writeFileSync(result.filePath.replace(".txt","EncMap.json").replace(".xml","EncMap.json"),
+                  JSON.stringify(tagsArray, null, 2));
+      let sentMap = {"content": encodedContent,
+                    "path": result.filePath};
+      event.reply('compressed', sentMap);
+    }
+  });
+});
 
+ipcMain.on('decompress', (event, content) => {
 
+  let encodingTags = "";
+  dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile']
+  })
+  .then(result => {
+    if (!result.canceled) {
+      encodingTags = result.filePaths[0];
+    }
+  })
+  .then( (result) => {
+    const decodedContent = decodeXMLTags(content, encodingTags);
+    dialog.showSaveDialog(mainWindow).then(result => {
+      if (!result.canceled) {
+        fs.writeFileSync(result.filePath, decodedContent);
+        let sentMap = {"content": decodedContent,
+                      "path": result.filePath};
+        event.reply('decompressed', sentMap);
+      }
+    });
+  })
+});
 
-
-
-
-// ipcMain.on('minify', (event, content) => {
-//   // console.log("inside ipcmain")
-//   // const minified = minifyXML(content);
-//   dialog.showSaveDialog(mainWindow).then(result => {
-//     if (!result.canceled) {
-//       fs.writeFileSync(result.filePath, content);
-//       event.reply('file-saved', result.filePath);
-//     }
-//   });
-  // fourthWindow = new BrowserWindow({
-  //     width: 800,
-  //     height: 600,
-  //     webPreferences: {
-  //       nodeIntegration: true,
-  //       contextIsolation: false
-  //     }
-  // });
-  // fourthWindow.loadFile();
-  // console.log("minifying", minified);
-  // fourthWindow.webContents.once("did-finish-load", () => {
-  //   console.log("loaded minified");
-  //   fourthWindow.webContents.send("minified", minified)
-  // })
-// });
-
-// ipcMain.on('compress', (event, content) => {
-//   dialog.showSaveDialog(mainWindow).then(result => {
-//     if (!result.canceled) {
-//       fs.writeFileSync(result.filePath, content);
-//       event.reply('file-saved', result.filePath);
-//     }
-//   });
-// });
-
-// ipcMain.on('decompress', (event, content) => {
-//   dialog.showSaveDialog(mainWindow).then(result => {
-//     if (!result.canceled) {
-//       fs.writeFileSync(result.filePath, content);
-//       event.reply('file-saved', result.filePath);
-//     }
-//   });
-// });
