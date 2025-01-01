@@ -107,6 +107,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  ipcRenderer.on("algorithms", type, () => {
+    textArea.value = modifyCode(textArea.value);
+    ipcRenderer.send("algorithms", {
+      content: textArea.value,
+      currentFilePath,
+      type,
+    });
+  });
+
   ipcRenderer.on("save-file-as", () => {
     textArea.value = modifyCode(textArea.value);
     ipcRenderer.send("save-file-as", textArea.value);
