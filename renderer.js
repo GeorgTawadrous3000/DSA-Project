@@ -99,6 +99,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  ipcRenderer.on("json-conversion", () => {
+    textArea.value = modifyCode(textArea.value);
+    ipcRenderer.send("json-conversion", {
+      content: textArea.value,
+      currentFilePath,
+    });
+  });
+
   ipcRenderer.on("save-file-as", () => {
     textArea.value = modifyCode(textArea.value);
     ipcRenderer.send("save-file-as", textArea.value);

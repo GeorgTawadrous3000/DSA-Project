@@ -4,7 +4,7 @@ const { ipcRenderer } = require("electron");
 
 // Listen for graph data sent from the main process
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOMContentLoaded"); // Debugging log
+  // console.log("DOMContentLoaded"); // Debugging log
   ipcRenderer.on("graph-data", (_event, graphData) => {
     renderGraph(graphData);
   });
