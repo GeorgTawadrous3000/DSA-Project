@@ -7,6 +7,7 @@ const { XML2JSObject, XML2JSON } = require("./JsonConversion.js");
 
 let mainWindow;
 let secondWindow;
+let thirdWindow;
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
@@ -70,6 +71,13 @@ function createWindow() {
           accelerator: "CmdOrCtrl+R",
           click: () => {
             mainWindow.webContents.send("render-file");
+          },
+        },
+        {
+          label: "jsonConversion",
+          accelerator: "CmdOrCtrl+J",
+          click: () => {
+            mainWindow.webContents.send("json-conversion");
           },
         },
       ],
@@ -141,9 +149,26 @@ ipcMain.on("render-file", (event, { content, currentFilePath }) => {
 
   // Wait until the second window finishes loading
   secondWindow.webContents.once("did-finish-load", () => {
-    console.log("Sending graph data:", graphData); // Log data before sending
+    // console.log("Sending graph data:", graphData); // Log data before sending
     secondWindow.webContents.send("graph-data", graphData);
   });
+});
 
-  secondWindow.webContents.openDevTools();
+ipcMain.on("json-conversion", (event, { content, currentFilePath }) => {
+  const jsonContent = XML2JSON(content);
+  thirdWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+  thirdWindow.loadFile("./jsonDisplay.html");
+  console.log("Sending JSON content:", jsonContent);
+  thirdWindow.webContents.once("did-finish-load", () => {
+    // console.log("Sending graph data:", graphData); // Log data before sending
+    thirdWindow.webContents.send("json-converted", jsonContent);
+  });
+  thirdWindow.openDevTools();
 });
