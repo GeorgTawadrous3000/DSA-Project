@@ -1,6 +1,6 @@
 // import * as d3 from "d3";
+import { ipcRenderer } from 'electron';
 
-const { ipcRenderer } = require("electron");
 
 // Listen for graph data sent from the main process
 document.addEventListener("DOMContentLoaded", () => {
