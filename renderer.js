@@ -1,6 +1,7 @@
 let currentFilePath = null;
 let isModified = false;
-const { correct, validate, beautify } = require("./ds/parsing");
+import { correct, validate, beautify } from './ds/parsing';
+
 document.addEventListener("DOMContentLoaded", () => {
   const textArea = document.getElementById("editor");
   const lineNumbers = document.getElementById("line-numbers");
