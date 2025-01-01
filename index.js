@@ -1,9 +1,10 @@
-const { app, BrowserWindow, Menu, dialog, ipcMain } = require("electron");
-const fs = require("fs-extra");
-const path = require("path");
-const { validate, beautify, correct } = require("./ds/parsing");
-const { getGraph } = require("./Graph.js");
-const { XML2JSObject, XML2JSON } = require("./JsonConversion.js");
+import { app, BrowserWindow, Menu, dialog, ipcMain } from 'electron';
+import fs from 'fs-extra';
+import path from 'path';
+import { validate, beautify, correct } from './ds/parsing';
+import { getGraph } from './Graph.js';
+import { XML2JSObject, XML2JSON } from './JsonConversion.js';
+
 
 let mainWindow;
 let secondWindow;
