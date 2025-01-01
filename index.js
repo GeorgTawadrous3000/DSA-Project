@@ -81,12 +81,6 @@ function createWindow() {
             mainWindow.webContents.send("json-conversion");
           },
         },
-        {
-          label: "Most Influential",
-          click: () => {
-            mainWindow.webContents.send("algorithms", "Most-influential");
-          },
-        },
       ],
     },
     {
