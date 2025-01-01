@@ -110,4 +110,60 @@ document.addEventListener("DOMContentLoaded", () => {
     isModified = false;
     updateTitle();
   });
+
+
+
+
+
+  ipcRenderer.on('minify', () => {
+    ipcRenderer.send('minify', textArea.value);
+  });
+
+  ipcRenderer.on('minifiedFile', (event, update) => {
+    alert("file minified successfuly");
+    textArea.value = update["content"];
+    updateLineNumbers();
+
+    currentFilePath = update["path"];
+    isModified = false;
+    updateTitle();
+  });
+
+
+
+
+  ipcRenderer.on('compress', () => {
+    ipcRenderer.send('compress', textArea.value);
+  });
+
+  ipcRenderer.on('compressed', (event, update) => {
+    alert("file compressed successfuly");
+    textArea.value = update["content"];
+    updateLineNumbers();
+
+    currentFilePath = update["path"];
+    isModified = false;
+    updateTitle();
+  });
+
+
+
+
+  ipcRenderer.on('decompress', () => {
+    ipcRenderer.send('decompress', textArea.value);
+  });
+
+  ipcRenderer.on('decompressed', (event, update) => {
+    alert("file decompressed successfuly");
+    textArea.value = update["content"];
+    updateLineNumbers();
+
+    currentFilePath = update["path"];
+    isModified = false;
+    updateTitle();
+  });
+
+
+});
+
 });

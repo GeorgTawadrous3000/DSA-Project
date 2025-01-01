@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import yargs from 'yargs';
 import { Stack, validate, correct, beautify } from './ds/parsing';
+import {minifyXML, encodeXMLTags, decodeXMLTags} from "./compression.js"
 import { getGraph } from './Graph';
 import { getmostinfluential, follows, mutfol, suggestedusrs, searchword, searchtopic, most_active } from './algorithms';
 
@@ -119,7 +120,14 @@ function main() {
     },
   },
   (argv) => {
-
+    const {input, output} = argv
+    try{
+      const content = fs.readFileSync(input, 'utf-8');
+      const minified = minifyXML(content)
+      fs.writeFileSync(output, minified)
+    }catch(error){
+      console.error('Error reading file:', error.message);
+    }
   }
 )
 .command("compress", "Compress the file", 
@@ -136,9 +144,26 @@ function main() {
     type: "string",
     demandOption: true
   },
+  encodingMap: {
+    describe: "file to save the encoding map",
+    alias: "e",
+    type: "string",
+    demandOption: true
+  }
 },
 (argv) => {
+  const {input, output, encodingMap} = argv
+    try{
+      const content = fs.readFileSync(input, 'utf-8');
+      const {encodedContent, tagsArray} = encodeXMLTags(content);
+      fs.writeFileSync(output, encodedContent);
+      fs.writeFileSync(encodingMap, JSON.stringify(tagsArray, null, 2), 'utf-8');
 
+      console.log(`Encoded file saved to: ${output}`);
+      console.log(`Unique tags map saved to: ${encodingMap}`);
+    }catch(error){
+      console.error('Error reading file:', error, input, output, encodingMap);
+    }
 })
 .command("decompress", "Decompress the file",
   {
@@ -154,9 +179,24 @@ function main() {
       type: "string",
       demandOption: true
     },
+    encodingMap: {
+      describe: "file to save the encoding map",
+      alias: "e",
+      type: "string",
+      demandOption: true
+    }
   },
   (argv) => {
-  
+    const {input, output, encodingMap} = argv
+    try{
+      const content = fs.readFileSync(input, 'utf-8');
+      const decodedContent = decodeXMLTags(content, encodingMap);
+      fs.writeFileSync(output, decodedContent);
+
+      console.log(`Encoded file saved to: ${output}`);
+    }catch(error){
+      console.error('Error reading file:', error, input, output, encodingMap);
+    }
   }
 )
 .command("draw", "Draw the xml file",
@@ -267,6 +307,7 @@ function main() {
     
     drawGraph(graph, 'graph.png');
   }
+
 )
 .command("most_active", "Most Active User", {
   input: {

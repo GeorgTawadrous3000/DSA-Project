@@ -4,10 +4,12 @@ import path from 'path';
 import { validate, beautify, correct } from './ds/parsing';
 import { getGraph } from './Graph.js';
 import { XML2JSObject, XML2JSON } from './JsonConversion.js';
+import {minifyXML, encodeXMLTags, decodeXMLTags} from "./compression.js";
 
 
 let mainWindow;
 let secondWindow;
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
@@ -63,8 +65,30 @@ function createWindow() {
           label: "Save As",
           accelerator: "CmdOrCtrl+Shift+S",
           click: () => {
-            mainWindow.webContents.send("save-file-as");
-          },
+
+            mainWindow.webContents.send('save-file-as');
+          }
+        },
+        {
+          label: 'Minify',
+          accelerator: 'CmdOrCtrl+Shift+M',
+          click: () => {
+            mainWindow.webContents.send('minify');
+          }
+        },
+        {
+          label: 'Compress',
+          accelerator: 'CmdOrCtrl+Shift+P',
+          click: () => {
+            mainWindow.webContents.send('compress');
+          }
+        },
+        {
+          label: 'Decompress',
+          accelerator: 'CmdOrCtrl+Shift+D',
+          click: () => {
+            mainWindow.webContents.send('decompress');
+          }
         },
         {
           label: "render",
@@ -113,6 +137,58 @@ ipcMain.on("save-file-as", (event, content) => {
   });
 });
 
+
+ipcMain.on('minify', (event, content) => {
+  const minified = minifyXML(content);
+  dialog.showSaveDialog(mainWindow).then(result => {
+    if (!result.canceled) {
+      fs.writeFileSync(result.filePath, minified);
+      let sentMap = {"content": minified,
+                    "path": result.filePath};
+      event.reply('minifiedFile', sentMap);
+    }
+  });
+});
+
+ipcMain.on('compress', (event, content) => {
+  const {encodedContent,tagsArray} = encodeXMLTags(content);
+  dialog.showSaveDialog(mainWindow).then(result => {
+    if (!result.canceled) {
+      fs.writeFileSync(result.filePath, encodedContent);
+      fs.writeFileSync(result.filePath.replace(".txt","EncMap.json").replace(".xml","EncMap.json"),
+                  JSON.stringify(tagsArray, null, 2));
+      let sentMap = {"content": encodedContent,
+                    "path": result.filePath};
+      event.reply('compressed', sentMap);
+    }
+  });
+});
+
+ipcMain.on('decompress', (event, content) => {
+
+  let encodingTags = "";
+  dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile']
+  })
+  .then(result => {
+    if (!result.canceled) {
+      encodingTags = result.filePaths[0];
+    }
+  })
+  .then( (result) => {
+    const decodedContent = decodeXMLTags(content, encodingTags);
+    dialog.showSaveDialog(mainWindow).then(result => {
+      if (!result.canceled) {
+        fs.writeFileSync(result.filePath, decodedContent);
+        let sentMap = {"content": decodedContent,
+                      "path": result.filePath};
+        event.reply('decompressed', sentMap);
+      }
+    });
+  })
+});
+
+
 ipcMain.on("render-file", (event, { content, currentFilePath }) => {
   const graph = getGraph(XML2JSObject(content));
   // Create a list of nodes
@@ -148,3 +224,4 @@ ipcMain.on("render-file", (event, { content, currentFilePath }) => {
 
   secondWindow.webContents.openDevTools();
 });
+
