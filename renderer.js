@@ -88,4 +88,32 @@ document.addEventListener('DOMContentLoaded', () => {
     isModified = false;
     updateTitle();
   });
+
+
+  // ipcRenderer.on('minify', (event, { filePath, content }) => {
+  //   ipcRenderer.send('minify', textArea.value);
+  //   // textArea.value = content;
+  //   // currentFilePath = filePath;
+  //   // isModified = false;
+  //   // updateLineNumbers();
+  //   // updateTitle();
+  // });
+
+  // ipcRenderer.on('compress', (event, { filePath, content }) => {
+  //   ipcRenderer.send('compress', textArea.value);
+  //   // textArea.value = content;
+  //   // currentFilePath = filePath;
+  //   // isModified = false;
+  //   // updateLineNumbers();
+  //   // updateTitle();
+  // });
+
+  // ipcRenderer.on('decompress', (event, { filePath, content }) => {
+  //   ipcRenderer.send('decompress', textArea.value);
+  //   // textArea.value = content;
+  //   // currentFilePath = filePath;
+  //   // isModified = false;
+  //   // updateLineNumbers();
+  //   // updateTitle();
+  // });
 });
