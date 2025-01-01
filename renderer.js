@@ -1,31 +1,32 @@
 let currentFilePath = null;
 let isModified = false;
+import { correct, validate, beautify } from './ds/parsing';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const textArea = document.getElementById('editor');
-  const lineNumbers = document.getElementById('line-numbers');
-  const titleBar = document.querySelector('title');
+document.addEventListener("DOMContentLoaded", () => {
+  const textArea = document.getElementById("editor");
+  const lineNumbers = document.getElementById("line-numbers");
+  const titleBar = document.querySelector("title");
 
   // Line number generation
   function updateLineNumbers() {
-    const lines = textArea.value.split('\n').length;
+    const lines = textArea.value.split("\n").length;
     lineNumbers.innerHTML = Array(lines)
-      .fill('<span></span>')
+      .fill("<span></span>")
       .map((_, i) => `<span>${i + 1}</span>`)
-      .join('');
+      .join("");
   }
 
   // Update title and modification status
   function updateTitle() {
-    const fileName = currentFilePath 
-      ? path.basename(currentFilePath) 
-      : 'Untitled';
-    document.title = `${fileName}${isModified ? ' *' : ''}`;
+    const fileName = currentFilePath
+      ? path.basename(currentFilePath)
+      : "Untitled";
+    document.title = `${fileName}${isModified ? " *" : ""}`;
   }
 
-  textArea.addEventListener('input', () => {
+  textArea.addEventListener("input", () => {
     updateLineNumbers();
-    
+
     // Mark as modified if content changes
     if (!isModified) {
       isModified = true;
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  textArea.addEventListener('scroll', () => {
+  textArea.addEventListener("scroll", () => {
     lineNumbers.scrollTop = textArea.scrollTop;
   });
 
@@ -41,30 +42,32 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLineNumbers();
 
   // IPC communication for file operations
-  const ipcRenderer = window.require('electron').ipcRenderer;
+  const ipcRenderer = window.require("electron").ipcRenderer;
 
   // New file handler
-  ipcRenderer.on('new-file', () => {
+  ipcRenderer.on("new-file", () => {
     // Check if current file is modified
     if (isModified) {
-      const response = window.confirm('Do you want to save changes to the current file?');
+      const response = window.confirm(
+        "Do you want to save changes to the current file?"
+      );
       if (response) {
-        ipcRenderer.send('save-file', { 
-          content: textArea.value, 
-          currentFilePath 
+        ipcRenderer.send("save-file", {
+          content: textArea.value,
+          currentFilePath,
         });
       }
     }
 
     // Reset for new file
-    textArea.value = '';
+    textArea.value = "";
     currentFilePath = null;
     isModified = false;
     updateLineNumbers();
     updateTitle();
   });
 
-  ipcRenderer.on('file-opened', (event, { filePath, content }) => {
+  ipcRenderer.on("file-opened", (event, { filePath, content }) => {
     textArea.value = content;
     currentFilePath = filePath;
     isModified = false;
@@ -72,22 +75,42 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTitle();
   });
 
-  ipcRenderer.on('save-file', () => {
-    ipcRenderer.send('save-file', { 
-      content: textArea.value, 
-      currentFilePath 
+  function modifyCode(content) {
+    if (!validate(content)) {
+      const corrected = beautify(correct(content));
+      console.log(corrected);
+      return corrected;
+    }
+    return content;
+  }
+
+  ipcRenderer.on("save-file", () => {
+    textArea.value = modifyCode(textArea.value);
+    ipcRenderer.send("save-file", {
+      content: textArea.value,
+      currentFilePath,
     });
   });
 
-  ipcRenderer.on('save-file-as', () => {
-    ipcRenderer.send('save-file-as', textArea.value);
+  ipcRenderer.on("render-file", () => {
+    textArea.value = modifyCode(textArea.value);
+    ipcRenderer.send("render-file", {
+      content: textArea.value,
+      currentFilePath,
+    });
   });
 
-  ipcRenderer.on('file-saved', (event, filePath) => {
+  ipcRenderer.on("save-file-as", () => {
+    textArea.value = modifyCode(textArea.value);
+    ipcRenderer.send("save-file-as", textArea.value);
+  });
+
+  ipcRenderer.on("file-saved", (event, filePath) => {
     currentFilePath = filePath;
     isModified = false;
     updateTitle();
   });
+
 
 
 
@@ -140,5 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTitle();
   });
 
+
+});
 
 });
