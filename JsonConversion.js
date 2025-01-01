@@ -1,4 +1,5 @@
-const { DOMParser } = require("xmldom");
+import { DOMParser } from 'xmldom';
+
 
 function XML2JSObject(data) {
   const xmlDoc = new DOMParser().parseFromString(data, "text/xml");
