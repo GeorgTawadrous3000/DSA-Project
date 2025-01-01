@@ -323,8 +323,7 @@ function main() {
   try {
     const content = fs.readFileSync(input, 'utf-8');
     const xmlObject = XML2JSObject(content);
-    let graph = getGraph(xmlObject)
-    let res = most_active(graph);
+    let res = most_active(xmlObject.users[0].user);
     console.log(res)
   }catch(e){
     console.log(e)
