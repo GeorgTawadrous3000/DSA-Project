@@ -10,16 +10,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Line number generation
   function updateLineNumbers(errorLines = []) {
-  const lines = textArea.value.split("\n").length;
-  lineNumbers.innerHTML = Array(lines)
-    .fill("")
-    .map((_, i) => {
-      const lineNumber = i + 1;
-      const className = errorLines.includes(lineNumber) ? "error-line" : "";
-      return `<span class="${className}">${lineNumber}</span>`;
-    })
-    .join("");
-}
+    const lines = textArea.value.split("\n").length;
+    lineNumbers.innerHTML = Array(lines)
+      .fill("")
+      .map((_, i) => {
+        const lineNumber = i + 1;
+        const isErrorLine = errorLines.includes(lineNumber);
+        const styles = isErrorLine ? 'style="background: red; color: white;"' : "";
+        return `<span ${styles}>${lineNumber}</span>`;
+      })
+      .join("");
+  }
+
 
 
   // Update title and modification status
