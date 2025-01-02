@@ -1,4 +1,4 @@
-function getGraph(obj) {
+export function getGraph(obj) {
   const users = obj.users[0].user; // Access the array of users correctly
   const graph = {};
 
@@ -17,4 +17,3 @@ function getGraph(obj) {
 }
 
 // { '1': [ '2', '3' ], '2': [ '1' ], '3': [ '1' ] }
-module.exports = { getGraph };

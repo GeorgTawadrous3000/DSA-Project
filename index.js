@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, dialog, ipcMain } from 'electron';
 import fs from 'fs-extra';
 import path from 'path';
-import { validate, beautify, correct } from './ds/parsing';
+import { validate, beautify, correct } from './ds/parsing.js';
 import { getGraph } from './Graph.js';
 import { XML2JSObject, XML2JSON } from './JsonConversion.js';
 import {minifyXML, encodeXMLTags, decodeXMLTags} from "./compression.js";
@@ -9,7 +9,8 @@ import {minifyXML, encodeXMLTags, decodeXMLTags} from "./compression.js";
 
 let mainWindow;
 let secondWindow;
-
+let thirdWindow;
+let algoWindow;
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
@@ -95,6 +96,54 @@ function createWindow() {
           accelerator: "CmdOrCtrl+R",
           click: () => {
             mainWindow.webContents.send("render-file");
+          }
+        },
+        {
+          label: "jsonConversion",
+          accelerator: "CmdOrCtrl+J",
+          click: () => {
+            mainWindow.webContents.send("json-conversion");
+          }
+        },
+      ],
+    },
+    {
+      label: "Algorithms",
+      submenu: [
+        {
+          label: "Most Influential",
+          click: () => {
+            mainWindow.webContents.send("algorithms", "Most-influential");
+          },
+        },
+        {
+          label: "Most Active",
+          click: () => {
+            mainWindow.webContents.send("algorithms", "Most-active");
+          },
+        },
+        {
+          label: "Mutual Friends",
+          click: () => {
+            mainWindow.webContents.send("algorithms", "Mutual-friends");
+          },
+        },
+        {
+          label: "Suggest Users",
+          click: () => {
+            mainWindow.webContents.send("algorithms", "Suggest-users");
+          },
+        },
+        {
+          label: "Search Word",
+          click: () => {
+            mainWindow.webContents.send("algorithms", "Search-word");
+          },
+        },
+        {
+          label: "Search a Topic",
+          click: () => {
+            mainWindow.webContents.send("algorithms", "Search-topic");
           },
         },
       ],
@@ -151,7 +200,10 @@ ipcMain.on('minify', (event, content) => {
 });
 
 ipcMain.on('compress', (event, content) => {
-  const {encodedContent,tagsArray} = encodeXMLTags(content);
+  const encodingObj = encodeXMLTags(content);
+  console.log(encodingObj);
+  const encodedContent = encodingObj["encodedContent"];
+  const tagsArray = encodingObj["tagsArray"];
   dialog.showSaveDialog(mainWindow).then(result => {
     if (!result.canceled) {
       fs.writeFileSync(result.filePath, encodedContent);
@@ -224,4 +276,56 @@ ipcMain.on("render-file", (event, { content, currentFilePath }) => {
 
   secondWindow.webContents.openDevTools();
 });
+
+
+
+
+
+ipcMain.on("json-conversion", (event, { content, currentFilePath }) => {
+  const jsonContent = XML2JSON(content);
+  thirdWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+  thirdWindow.loadFile("./jsonDisplay.html");
+  // console.log("Sending JSON content:", jsonContent);
+  thirdWindow.webContents.once("did-finish-load", () => {
+    // console.log("Sending graph data:", graphData); // Log data before sending
+    thirdWindow.webContents.send("json-converted", jsonContent);
+  });
+});
+
+ipcMain.on("algorithms", (event, { content, currentFilePath, type }) => {
+  const graph = getGraph(XML2JSObject(content));
+  const xmlObject = XML2JSObject(content);
+  // console.log("algo");
+  algoWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+  // console.log("Type of algorithm:", type);
+  algoWindow.loadFile("./algo.html");
+  algoWindow.webContents.once("did-finish-load", () => {
+    algoWindow.webContents.send("algorithms", xmlObject, graph, type);
+    algoWindow.openDevTools();
+  });
+});
+
+// ipcMain.on("Most-active", (event, { content, currentFilePath }) => {
+
+// });
+// ipcMain.on("Mutual-friends", (event, type, { content, currentFilePath }) => {
+
+// });
+// ipcMain.on("Suggest-users", (event, type, { content, currentFilePath }) => {});
+// ipcMain.on("Search-word", (event, type, { content, currentFilePath }) => {});
+// ipcMain.on("Search-topic", (event, type, { content, currentFilePath }) => {});
 

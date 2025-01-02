@@ -1,0 +1,25 @@
+{
+  "school": [
+    {
+      "users": {
+        "user": [
+          {
+            "name": "John Doe",
+            "age": "16",
+            "grade": "10"
+          },
+          {
+            "name": "Jane Smith",
+            "age": "17",
+            "grade": "11"
+          },
+          {
+            "name": "Emily Johnson",
+            "age": "15",
+            "grade": "9"
+          }
+        ]
+      }
+    }
+  ]
+}

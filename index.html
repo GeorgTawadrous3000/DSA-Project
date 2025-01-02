@@ -9,9 +9,10 @@
         <div id="line-numbers" class="line-numbers"></div>
         <textarea id="editor" class="text-area" spellcheck="false"></textarea>
     </div>
-    <script>
-        window.path = require('path');
+    <script type="module">
+        import path from 'path';
+        window.path = path;
     </script>
-    <script src="renderer.js"></script>
+    <script src="renderer.js" type="module"></script>
 </body>
 </html>

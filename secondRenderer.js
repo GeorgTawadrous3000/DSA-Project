@@ -1,5 +1,5 @@
 // import * as d3 from "d3";
-import { ipcRenderer } from 'electron';
+const ipcRenderer = window.require("electron").ipcRenderer;
 
 
 // Listen for graph data sent from the main process

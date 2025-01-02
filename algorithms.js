@@ -1,4 +1,4 @@
-const getmostinfluential= (graph)=>{
+export const getmostinfluential= (graph)=>{
     let res=null;
     let max=0;
     for (let id in graph) {
@@ -11,7 +11,10 @@ const getmostinfluential= (graph)=>{
     return res;
 }
 
-const follows = (user1,user2)=>{
+
+
+
+export const follows = (user1,user2)=>{
     res = false
     user1.followers.follower.some(follower => {
         if(user2.id == follower.id){
@@ -21,7 +24,10 @@ const follows = (user1,user2)=>{
     })
     return res;
 }
-const mutfol= (users)=>{
+
+
+
+export const mutfol= (users)=>{
     let total_followers = []
     
     users.forEach((user) => {
@@ -31,7 +37,7 @@ const mutfol= (users)=>{
                 inner_followers.push(fol.id)
             })
         }else{
-            inner_followers.push(user.follower.id)
+            inner_followers.push(user.followers.follower.id)
         }
         total_followers.push(inner_followers)
     })
@@ -40,17 +46,20 @@ const mutfol= (users)=>{
     })
     return intersection;
 }
-const suggestedusrs=(user1,users)=>{
-    console.log(users)
+
+
+
+
+export const suggestedusrs=(user1,users)=>{
     function addSuggestions(followers, suggestions) {
         if (Array.isArray(followers)) {
             followers.forEach(follower => {
-                if (!suggestions.has(follower.id)) {
+                if (!suggestions.has(follower.id) && follower.id != user1.id) {
                     suggestions.add(follower.id);
                 }
             });
         } else if (followers && followers.id) {
-            if (!suggestions.has(followers.id)) {
+            if (!suggestions.has(followers.id) && followers.id != user1.id) {
                 suggestions.add(followers.id);
             }
         }
@@ -78,7 +87,12 @@ const suggestedusrs=(user1,users)=>{
     
     return suggestionArray
 }
-const getAllPosts = (users) => {
+
+
+
+
+
+export const getAllPosts = (users) => {
     let posts = []
     users.forEach((u) => {
         if (Array.isArray(u.posts.post)) {
@@ -91,7 +105,13 @@ const getAllPosts = (users) => {
     })
     return posts
 }
-const searchword=(word,posts)=>{
+
+
+
+
+
+
+export const searchword=(word,posts)=>{
     let results=[];
     posts.forEach((p) => {
         if(p.body.includes(word)){
@@ -100,7 +120,12 @@ const searchword=(word,posts)=>{
     })
     return results;
 }
-const searchtopic=(topic,posts)=>{
+
+
+
+
+
+export const searchtopic=(topic,posts)=>{
     let results=[];
     posts.forEach((p) => {
         const topics = Array.isArray(p.topics.topic)
@@ -111,12 +136,15 @@ const searchtopic=(topic,posts)=>{
         }
     })
     return results;
-} 
+}
 
-const most_active = (graph) => {
-    
+
+
+
+export const most_active = (graph) => {
+
     graph.forEach((u) => {
-        
+
         u['followings'] = []
         graph.forEach((u2) => {
             const u2Followers = Array.isArray(u2.followers.follower)
@@ -142,7 +170,6 @@ const most_active = (graph) => {
         }
     });
 
-    return u_res
+    return u_res.id;
 }
 
-module.exports = {getmostinfluential, follows, mutfol, suggestedusrs, searchword, searchtopic, most_active}

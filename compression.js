@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const {Stack, validate, correct, beautify} = require("./ds/parsing");
+import fs from 'fs';
+import path from 'path';
+import {Stack, validate, correct, beautify} from "./ds/parsing.js";
 
 
 
 //Minify
-function minifyXML(xmlContent) {
+export function minifyXML(xmlContent) {
     const noWhitecontent = xmlContent.replace(/^\s*[\r\n]/gm, '') //remove empty lines
     .replace(/\s{2,}/g, ' ') //replace multiple spaces with a single space
     .replace(/\n\s+/g, '\n') //remove leading spaces on each line
@@ -16,11 +16,10 @@ function minifyXML(xmlContent) {
 
 
 //encoding
-function encodeXMLTags(content) {
+export function encodeXMLTags(content) {
     try {
         // const content = fs.readFileSync(filePath, 'utf-8');
-
-        noSpacecontent = minifyXML(content);
+        let noSpacecontent = minifyXML(content);
 
         const uniqueTags = new Map();
         let tagCounter = 1;
@@ -32,8 +31,11 @@ function encodeXMLTags(content) {
             return match.replace(match, uniqueTags.get(tagName));
         });
         const tagsArray = Array.from(uniqueTags.entries());
+        let exportObj = {"encodedContent": encodedContent,
+                    "tagsArray": tagsArray};
+                    console.log(exportObj);
 
-        return {encodedContent,tagsArray};
+        return exportObj;
 
         // const outputFilePath = path.join(path.dirname(filePath), 'encoded_output.txt');
         // fs.writeFileSync(outputFilePath, encodedContent, 'utf-8');
@@ -49,6 +51,7 @@ function encodeXMLTags(content) {
         // console.log(`Unique tags map saved to: ${uniqueTagsFilePath}`);
     } catch (error) {
         // console.error('Error processing XML file:', error.message);
+        return null;
     }
 }
 
@@ -56,7 +59,7 @@ function encodeXMLTags(content) {
 
 
 // decode
-function decodeXMLTags(content, tagsFilePath) {
+export function decodeXMLTags(content, tagsFilePath) {
     try {
         // const content = fs.readFileSync(filePath, 'utf-8');
         let isClosingTag = 0;
@@ -95,47 +98,3 @@ function decodeXMLTags(content, tagsFilePath) {
     }
 }
 
-
-
-
-module.exports = {minifyXML, encodeXMLTags, decodeXMLTags};
-
-
-
-// Command-line interface
-// const args = process.argv.slice(2);
-// //if (args.length !== 2 && args.length !== 3) {
-// if (args.length !== 3) {
-//     console.error('Usage: node bpe_xml_cli.js <encode|decode> <path_to_xml_file> [tags_file]', args);
-//     process.exit(1);
-// }
-
-// const action = args[0];
-// const filePath = args[1];
-// const tagsFilePath = args[2];
-
-// if (!fs.existsSync(filePath)) {
-//     console.error('Error: File does not exist');
-//     process.exit(1);
-// }
-
-// if (action === 'encode') {
-//     if (args.length !== 3) {
-//         console.error('Error: Please provide the path to export the tags file for decoding later.');
-//         process.exit(1);
-//     }
-//     encodeXMLTags(filePath, tagsFilePath);
-// } else if (action === 'decode') {
-//     if (args.length !== 3) {
-//         console.error('Error: Please provide the path to the tags file for decoding.');
-//         process.exit(1);
-//     }
-//     if (!fs.existsSync(tagsFilePath)) {
-//         console.error('Error: Tags file does not exist');
-//         process.exit(1);
-//     }
-//     decodeXMLTags(filePath, tagsFilePath);
-// } else {
-//     console.error('Error: Invalid action. Use "encode" or "decode".');
-//     process.exit(1);
-// }

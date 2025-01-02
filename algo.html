@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Algorithms Result</title>
+    <style>
+      /* General Styles */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f9;
+        color: #333;
+      }
+
+      /* Hidden Elements */
+      textarea#input,
+      button#btn {
+        display: none; /* Completely hide from view */
+      }
+
+      /* Result Container Styles */
+      #result {
+        margin-top: 30px;
+        padding: 20px;
+        border-left: 5px solid #007bff; /* Accent border */
+        border-radius: 5px;
+        font-size: 16px;
+        word-wrap: break-word;
+        line-break: auto;
+      }
+
+      pre {
+        width: 100%;
+        word-wrap: break-word;
+        line-break: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Hidden Textarea for Input -->
+    <textarea
+      name="input"
+      id="input"
+      placeholder="Enter your Input"
+      hidden
+    ></textarea>
+
+    <!-- Hidden Button to Execute Code -->
+    <button id="btn" hidden>Execute</button>
+
+    <!-- Result Display -->
+    <pre id="result">The results will appear here...</pre>
+
+    <script src="./algoRenderer.js" type="module"></script>
+  </body>
+</html>

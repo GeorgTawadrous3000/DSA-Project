@@ -1,6 +1,7 @@
 let currentFilePath = null;
 let isModified = false;
-import { correct, validate, beautify } from './ds/parsing';
+const path = require('path');
+import { correct, validate, beautify } from './ds/parsing.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   const textArea = document.getElementById("editor");
@@ -21,7 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileName = currentFilePath
       ? path.basename(currentFilePath)
       : "Untitled";
-    document.title = `${fileName}${isModified ? " *" : ""}`;
+      console.log(fileName)
+      document.querySelector('title').innerHTML = `${fileName}${isModified ? " *" : ""}`;
   }
 
   textArea.addEventListener("input", () => {
@@ -90,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
       content: textArea.value,
       currentFilePath,
     });
+    updateTitle();
   });
 
   ipcRenderer.on("render-file", () => {
@@ -164,6 +167,25 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 
-});
+
+
+  ipcRenderer.on("json-conversion", () => {
+    textArea.value = modifyCode(textArea.value);
+    ipcRenderer.send("json-conversion", {
+      content: textArea.value,
+      currentFilePath,
+    });
+  });
+
+  ipcRenderer.on("algorithms", (event, type) => {
+    textArea.value = modifyCode(textArea.value);
+    ipcRenderer.send("algorithms", {
+      content: textArea.value,
+      currentFilePath,
+      type,
+    });
+  });
+
+
 
 });

@@ -76,6 +76,9 @@
             <follower>
                 <id>1</id>
             </follower>
+            <follower>
+                <id>2</id>
+            </follower>
         </followers>
     </user>
 </users>
