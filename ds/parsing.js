@@ -49,7 +49,7 @@ class Stack {
     }
 }
 
-// implement the validate() function, returns boolean true/false
+// implement the validate() function, returns [valid, errorLines] where valid is boolean and errorLines is array
 function validate(file_text = null) {
     if(file_text == null || file_text == "") return false;
 
@@ -59,11 +59,14 @@ function validate(file_text = null) {
     // remove empty lines
     lines = lines.filter(element => element !== '');
 
-    // use a stack for checking the validity of the xml
+    // use a stacks for correcting the xml
     // stack will only hold names of the opening tags
+    // errorLines will hold line numbers that contain erros
     const stack = new Stack();
+    var errorLines = []
 
     // validate the xml text
+    var valid = true;
     for(var i = 0; i < lines.length; i++) {
 
         // remove leading/trailing spaces from the line
@@ -91,20 +94,28 @@ function validate(file_text = null) {
             else if(lines[i][1] == '!') {
             }
             else if(lines[i][1] == '?') {
-                if(i != 0) return false; 
+                // if(i != 0) return false; 
+                if(i != 0) {
+                    valid = false;
+                    errorLines.push(i+1);
+                }
             }
             else if(lines[i][1] != '/') {
                 // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
                 let tag_name = lines[i].match(/<\/?(.*?)>/)[1];
-                stack.push(tag_name);
+                stack.push([tag_name, i]);
             }     
             else {
                 // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
                 let tag_name = lines[i].match(/<\/?(.*?)>/)[1];
                 // check if the last tag in the stack has the same name then pop()
                 // else that indicates that a conflict exists and thus the xml isn't valid
-                if(stack.top() == tag_name) stack.pop();
-                else return false;
+                if(stack.top()[0] == tag_name) stack.pop();
+                // else return false;
+                else {
+                    valid = false;
+                    errorLines.push(i+1);
+                }
             }
         }
 
@@ -113,8 +124,16 @@ function validate(file_text = null) {
     // if stack isn't empty after parsing the whole file then that indicates that 
     // there is one or more opening tags without a closing tag and thus the xml isn't valid
     // else the xml file is valid and return true
-    if(!stack.isEmpty()) return false;
-    return true;
+    // if(!stack.isEmpty()) return false;
+    if(!stack.isEmpty()) {
+        while(!stack.isEmpty()){
+            valid = false;
+            errorLines.push(stack.top()[1]+1);
+            stack.pop();
+        }
+    }
+    errorLines.sort();
+    return [valid, errorLines];
 }
 
 // implement the correct() function, returns string with corrected xml data
@@ -226,9 +245,6 @@ function beautify(file_text = null) {
     // remove empty lines
     lines = lines.filter(element => element !== '');
 
-    // stack will only hold names of the opening tags
-    const stack = new Stack();
-
     // create var for holding current indentation level
     var current_indentation_level = 0;
 
@@ -284,4 +300,3 @@ function beautify(file_text = null) {
 
 
 module.exports = {Stack, validate, correct, beautify};
-
