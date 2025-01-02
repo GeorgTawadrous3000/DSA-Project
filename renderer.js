@@ -78,12 +78,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function modifyCode(content) {
-    if (!validate(content)) {
-      const corrected = beautify(correct(content));
-      console.log(corrected);
-      return corrected;
+    let arr = validate(content);
+    let isValidated = arr[0];
+    let corrected = null;
+    if (isValidated) {
+      corrected = content;
+    } else {
+      corrected = correct(content);
     }
-    return content;
+    const beautified = beautify(corrected);
+    console.log(beautified);
+    return beautified;
+    // return content+"format invalid";
   }
 
   ipcRenderer.on("save-file", () => {
