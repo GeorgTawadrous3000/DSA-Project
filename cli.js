@@ -45,15 +45,28 @@ yargs(hideBin(process.argv))
     const {input, output, format} = argv
     try {
       const content = fs.readFileSync(input, 'utf-8');
-      console.log(validate(content));
+      const arr = validate(content);
+      const valid = arr[0];
+      const errorLines = (arr[1]) ? arr[1] : "none";
+      console.log(valid, (valid)? "none": errorLines);
+
+      if(output && format) {
+        const corrected = correct(content)
+        const formatted = beautify(corrected)
+        fs.writeFileSync(input, formatted)
+        console.log("formatted and exported to ", output);
+      }
+      if(output){
+        fs.writeFileSync(output, content)
+        console.log("validated and exported to ", output);
+      }
       if(format){
         const corrected = correct(content)
         const formatted = beautify(corrected)
-        if(output){
-          console.log("formatted and exported to ", output);
-          fs.writeFileSync(output, formatted)
-        }
+        fs.writeFileSync(input, formatted)
+        console.log("formatted and modified ", input);
       }
+
     } catch (error) {
       console.error('Error reading file:', error.message);
     }
@@ -71,7 +84,7 @@ yargs(hideBin(process.argv))
       describe: "Output file",
       alias: "o",
       type: "string",
-      demandOption: true
+      demandOption: false
     },
   },
   (argv) => {
@@ -80,8 +93,13 @@ yargs(hideBin(process.argv))
     const content = fs.readFileSync(input, 'utf-8');
     const corrected = correct(content)
     const formatted = beautify(corrected)
-    fs.writeFileSync(output, formatted)
-    console.log("formatted and exported to ", output);
+    if(output){
+      fs.writeFileSync(output, formatted)
+      console.log("formatted and exported to ", output);
+    } else {
+      fs.writeFileSync(input, formatted)
+      console.log("formatted and modified ", input);
+    }
   }catch(error){
     console.error('Error reading file:', error.message);
   }
@@ -125,7 +143,7 @@ yargs(hideBin(process.argv))
       describe: "Output file",
       alias: "o",
       type: "string",
-      demandOption: true
+      demandOption: false
     },
   },
   (argv) => {
@@ -134,8 +152,13 @@ yargs(hideBin(process.argv))
       const content = fs.readFileSync(input, 'utf-8');
       const corrected = correct(content)
       const minified = minifyXML(corrected)
-      fs.writeFileSync(output, minified)
-      console.log("formatted and minified at file: ", output);
+      if(output){
+        fs.writeFileSync(output, minified)
+        console.log("minified and exported to ", output);
+      } else {
+        fs.writeFileSync(input, minified)
+        console.log("minified and exported to ", input);
+      }
     }catch(error){
       console.error('Error reading file:', error.message);
     }

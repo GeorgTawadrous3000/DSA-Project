@@ -1,3 +1,23 @@
+// NOTE: this code assumes that the text within the xml tags can't contain the characters {'<', '>'} 
+// and that {"&lt", "&gt"} are used to represent them respectively
+//
+//
+// NOTE: this code uses 4 space characters to beautify instead of a single tab character
+//
+//
+// NOTE: cases that are not handled in validate() & correct() functions
+//          case 1 : if there is both an opening & closing tag in the same line with conflicting tag names
+//                   ex: <tag_A> arbitrary text </tag_B>
+//
+//
+// NOTE: cases that are not handled in beautify() function
+//          case 1 : if there is text before/after an opening/closing tag
+//                   ex: <tagA> arbitrary text
+//                   ex: arbitrary text <tagA>
+//                   ex: </tagA> arbitrary text
+//                   ex: arbitrary text </tagA>
+
+
 // implement the Stack Data Structure
 export class Stack {
     constructor() {
@@ -29,21 +49,19 @@ export class Stack {
     }
 }
 
-// implement the validate() function, returns boolean true/false
+// implement the validate() function, returns [valid, errorLines] where valid is boolean and errorLines is array
 export function validate(file_text = null) {
     if(file_text == null || file_text == "") return false;
 
     // split the file contents into lines
     var lines = file_text.replace(/\r\n/g, '\n').split('\n');
 
-    // remove empty lines
-    lines = lines.filter(element => element !== '');
-
-    // use a stack for checking the validity of the xml
+    // use a stack for correcting the xml
     // stack will only hold names of the opening tags
     const stack = new Stack();
 
     // validate the xml text
+    var non_empty_line_encountered = false;
     for(var i = 0; i < lines.length; i++) {
 
         // remove leading/trailing spaces from the line
@@ -71,21 +89,31 @@ export function validate(file_text = null) {
             else if(lines[i][1] == '!') {
             }
             else if(lines[i][1] == '?') {
-                if(i != 0) return false; 
+                // if(i != 0) return false; 
+                if(non_empty_line_encountered) {
+                    return [false, i+1]
+                }
             }
             else if(lines[i][1] != '/') {
                 // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
                 let tag_name = lines[i].match(/<\/?(.*?)>/)[1];
-                stack.push(tag_name);
+                stack.push([tag_name, i]);
             }     
             else {
                 // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
                 let tag_name = lines[i].match(/<\/?(.*?)>/)[1];
                 // check if the last tag in the stack has the same name then pop()
                 // else that indicates that a conflict exists and thus the xml isn't valid
-                if(stack.top() == tag_name) stack.pop();
-                else return false;
+                if(stack.top()[0] == tag_name) stack.pop();
+                // else return false;
+                else {
+                    return [false, i+1]
+                }
             }
+        }
+
+        if(!non_empty_line_encountered && (lines[i].trim().length != 0)){
+            non_empty_line_encountered = true
         }
 
     }
@@ -93,8 +121,17 @@ export function validate(file_text = null) {
     // if stack isn't empty after parsing the whole file then that indicates that 
     // there is one or more opening tags without a closing tag and thus the xml isn't valid
     // else the xml file is valid and return true
-    if(!stack.isEmpty()) return false;
-    return true;
+    // if(!stack.isEmpty()) return false;
+    if(!stack.isEmpty()) {
+        return [false, stack.top()[1]+1]
+        // while(!stack.isEmpty()){
+            // valid = false;
+            // errorLines.push(stack.top()[1]+1);
+            // stack.pop();
+        // }
+    }
+    // errorLines.sort();
+    return [true, []];
 }
 
 // implement the correct() function, returns string with corrected xml data
@@ -206,9 +243,6 @@ export function beautify(file_text = null) {
     // remove empty lines
     lines = lines.filter(element => element !== '');
 
-    // stack will only hold names of the opening tags
-    const stack = new Stack();
-
     // create var for holding current indentation level
     var current_indentation_level = 0;
 
@@ -257,7 +291,9 @@ export function beautify(file_text = null) {
         }
 
     }
-    
+
     // return the beautified xml data
     return lines_beautified.join("\n");
 }
+
+
