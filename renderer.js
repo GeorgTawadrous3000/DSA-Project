@@ -9,13 +9,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const titleBar = document.querySelector("title");
 
   // Line number generation
-  function updateLineNumbers() {
-    const lines = textArea.value.split("\n").length;
-    lineNumbers.innerHTML = Array(lines)
-      .fill("<span></span>")
-      .map((_, i) => `<span>${i + 1}</span>`)
-      .join("");
-  }
+  function updateLineNumbers(errorLines = []) {
+  const lines = textArea.value.split("\n").length;
+  lineNumbers.innerHTML = Array(lines)
+    .fill("")
+    .map((_, i) => {
+      const lineNumber = i + 1;
+      const className = errorLines.includes(lineNumber) ? "error-line" : "";
+      return `<span class="${className}">${lineNumber}</span>`;
+    })
+    .join("");
+}
+
 
   // Update title and modification status
   function updateTitle() {
@@ -27,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   textArea.addEventListener("input", () => {
-    updateLineNumbers();
+    
+    updateLineNumbers(validate(textArea.value)[1]);
 
     // Mark as modified if content changes
     if (!isModified) {
@@ -41,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Initial line numbers
-  updateLineNumbers();
+  updateLineNumbers(validate(textArea.value)[1]);
 
   // IPC communication for file operations
   const ipcRenderer = window.require("electron").ipcRenderer;
@@ -65,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     textArea.value = "";
     currentFilePath = null;
     isModified = false;
-    updateLineNumbers();
+    updateLineNumbers(validate(textArea.value)[1]);
     updateTitle();
   });
 
@@ -73,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     textArea.value = content;
     currentFilePath = filePath;
     isModified = false;
-    updateLineNumbers();
+    updateLineNumbers(validate(textArea.value)[1]);
     updateTitle();
   });
 
@@ -131,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.on('minifiedFile', (event, update) => {
     alert("file minified successfuly");
     textArea.value = update["content"];
-    updateLineNumbers();
+    updateLineNumbers(validate(textArea.value)[1]);
 
     currentFilePath = update["path"];
     isModified = false;
@@ -148,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.on('compressed', (event, update) => {
     alert("file compressed successfuly");
     textArea.value = update["content"];
-    updateLineNumbers();
+    updateLineNumbers(validate(textArea.value)[1]);
 
     currentFilePath = update["path"];
     isModified = false;
@@ -165,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.on('decompressed', (event, update) => {
     alert("file decompressed successfuly");
     textArea.value = update["content"];
-    updateLineNumbers();
+    updateLineNumbers(validate(textArea.value)[1]);
 
     currentFilePath = update["path"];
     isModified = false;
