@@ -6,10 +6,9 @@ import { correct, validate, beautify } from './ds/parsing.js';
 document.addEventListener("DOMContentLoaded", () => {
   const textArea = document.getElementById("editor");
   const lineNumbers = document.getElementById("line-numbers");
-  const titleBar = document.querySelector("title");
 
   // Line number generation
-  function updateLineNumbers(errorLines = []) {
+  function updateLineNumbers(errorLines) {
     const lines = textArea.value.split("\n").length;
     lineNumbers.innerHTML = Array(lines)
       .fill("")
@@ -21,8 +20,24 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .join("");
   }
+  
 
 
+  function modifyCode(content) {
+    let arr = validate(content);
+    let isValidated = arr[0];
+    let corrected = null;
+    if (isValidated) {
+      corrected = content;
+    } else {
+      corrected = correct(content);
+    }
+    const beautified = beautify(corrected);
+    console.log(beautified);
+    
+    return beautified;
+    // return content+"format invalid";
+  }
 
   // Update title and modification status
   function updateTitle() {
@@ -85,20 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateTitle();
   });
 
-  function modifyCode(content) {
-    let arr = validate(content);
-    let isValidated = arr[0];
-    let corrected = null;
-    if (isValidated) {
-      corrected = content;
-    } else {
-      corrected = correct(content);
-    }
-    const beautified = beautify(corrected);
-    console.log(beautified);
-    return beautified;
-    // return content+"format invalid";
-  }
+
 
   ipcRenderer.on("save-file", () => {
     textArea.value = modifyCode(textArea.value);
@@ -107,6 +109,11 @@ document.addEventListener("DOMContentLoaded", () => {
       currentFilePath,
     });
     updateTitle();
+  });
+
+  ipcRenderer.on("format", () => {
+    textArea.value = modifyCode(textArea.value);
+    updateLineNumbers(validate(textArea.value)[1]);
   });
 
   ipcRenderer.on("render-file", () => {
