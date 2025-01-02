@@ -51,87 +51,93 @@ export class Stack {
 
 // implement the validate() function, returns [valid, errorLines] where valid is boolean and errorLines is array
 export function validate(file_text = null) {
-    if(file_text == null || file_text == "") return false;
+    try {
+        if(file_text == null || file_text == "") return [false,[0]];
 
-    // split the file contents into lines
-    var lines = file_text.replace(/\r\n/g, '\n').split('\n');
+        // split the file contents into lines
+        var lines = file_text.replace(/\r\n/g, '\n').split('\n');
 
-    // use a stack for correcting the xml
-    // stack will only hold names of the opening tags
-    const stack = new Stack();
+        // use a stack for correcting the xml
+        // stack will only hold names of the opening tags
+        const stack = new Stack();
 
-    // validate the xml text
-    var non_empty_line_encountered = false;
-    for(var i = 0; i < lines.length; i++) {
+        // validate the xml text
+        var non_empty_line_encountered = false;
+        for(var i = 0; i < lines.length; i++) {
 
-        // remove leading/trailing spaces from the line
-        lines[i] = lines[i].trim();
+            // remove leading/trailing spaces from the line
+            lines[i] = lines[i].trim();
 
-        // count num '<' in the line
-        // the "|| []" is to ensure that result is 
-        // always an array even if there are no matches
-        let result = lines[i].match(/</g) || [];
-        let num_matches = result.length;
+            // count num '<' in the line
+            // the "|| []" is to ensure that result is 
+            // always an array even if there are no matches
+            let result = lines[i].match(/</g) || [];
+            let num_matches = result.length;
 
-        // if the line is a tag parse it 
-        // else it is normal text so ignore it
-        if(num_matches != 0) {
+            // if the line is a tag parse it 
+            // else it is normal text so ignore it
+            if(num_matches != 0) {
 
-            // check if the tag is opening <...>, closing </...>, or both <...> </...>
-            // simply check if num '<' in the line is 2 then both, thus we ignore this case
-            // else if second character is '!' then it is comment and ignore it
-            // else if second character is '?' then it is start tag, thus check if it is at the beginning of the file or not
-            // else if second character is not '/' then opening
-            // else it is closing
-            if(num_matches == 2) {
-                continue;
-            }
-            else if(lines[i][1] == '!') {
-            }
-            else if(lines[i][1] == '?') {
-                // if(i != 0) return false; 
-                if(non_empty_line_encountered) {
-                    return [false, i+1]
+                // check if the tag is opening <...>, closing </...>, or both <...> </...>
+                // simply check if num '<' in the line is 2 then both, thus we ignore this case
+                // else if second character is '!' then it is comment and ignore it
+                // else if second character is '?' then it is start tag, thus check if it is at the beginning of the file or not
+                // else if second character is not '/' then opening
+                // else it is closing
+                if(num_matches == 2) {
+                    continue;
                 }
-            }
-            else if(lines[i][1] != '/') {
-                // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
-                let tag_name = lines[i].match(/<\/?(.*?)>/)[1];
-                stack.push([tag_name, i]);
-            }     
-            else {
-                // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
-                let tag_name = lines[i].match(/<\/?(.*?)>/)[1];
-                // check if the last tag in the stack has the same name then pop()
-                // else that indicates that a conflict exists and thus the xml isn't valid
-                if(stack.top()[0] == tag_name) stack.pop();
-                // else return false;
+                else if(lines[i][1] == '!') {
+                }
+                else if(lines[i][1] == '?') {
+                    // if(i != 0) return false; 
+                    if(non_empty_line_encountered) {
+                        return [false, [i+1]]
+                    }
+                }
+                else if(lines[i][1] != '/') {
+                    // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
+                    let tag_name = lines[i].match(/<\/?(.*?)>/)[1];
+                    stack.push([tag_name, i]);
+                }     
                 else {
-                    return [false, i+1]
+                    // Use a regular expression to extract the tag name, i.e. the word inside <...> or </...>
+                    let tag_name = lines[i].match(/<\/?(.*?)>/)[1];
+                    // check if the last tag in the stack has the same name then pop()
+                    // else that indicates that a conflict exists and thus the xml isn't valid
+                    if(stack.top()[0] == tag_name) stack.pop();
+                    // else return false;
+                    else {
+                        return [false, [i+1]]
+                    }
                 }
             }
+
+            if(!non_empty_line_encountered && (lines[i].trim().length != 0)){
+                non_empty_line_encountered = true
+            }
+
         }
 
-        if(!non_empty_line_encountered && (lines[i].trim().length != 0)){
-            non_empty_line_encountered = true
+        // if stack isn't empty after parsing the whole file then that indicates that 
+        // there is one or more opening tags without a closing tag and thus the xml isn't valid
+        // else the xml file is valid and return true
+        // if(!stack.isEmpty()) return false;
+        if(!stack.isEmpty()) {
+            return [false, [stack.top()[1]+1]]
+            // while(!stack.isEmpty()){
+                // valid = false;
+                // errorLines.push(stack.top()[1]+1);
+                // stack.pop();
+            // }
         }
-
+        // errorLines.sort();
+        return [true, []];
+    } catch (error) {
+        console.log(error)
+        return [false, [0]];
     }
-
-    // if stack isn't empty after parsing the whole file then that indicates that 
-    // there is one or more opening tags without a closing tag and thus the xml isn't valid
-    // else the xml file is valid and return true
-    // if(!stack.isEmpty()) return false;
-    if(!stack.isEmpty()) {
-        return [false, stack.top()[1]+1]
-        // while(!stack.isEmpty()){
-            // valid = false;
-            // errorLines.push(stack.top()[1]+1);
-            // stack.pop();
-        // }
-    }
-    // errorLines.sort();
-    return [true, []];
+    
 }
 
 // implement the correct() function, returns string with corrected xml data
