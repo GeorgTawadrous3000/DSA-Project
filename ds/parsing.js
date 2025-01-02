@@ -49,24 +49,19 @@ class Stack {
     }
 }
 
-// implement the validate() function, returns [valid, errorLines] where valid is boolean and errorLines is array
+// implement the validate() function, returns [true/false, [errorLines]]
 function validate(file_text = null) {
     if(file_text == null || file_text == "") return false;
 
     // split the file contents into lines
     var lines = file_text.replace(/\r\n/g, '\n').split('\n');
 
-    // remove empty lines
-    lines = lines.filter(element => element !== '');
-
-    // use a stacks for correcting the xml
+    // use a stack for correcting the xml
     // stack will only hold names of the opening tags
-    // errorLines will hold line numbers that contain erros
     const stack = new Stack();
-    var errorLines = []
 
     // validate the xml text
-    var valid = true;
+    var non_empty_line_encountered = false;
     for(var i = 0; i < lines.length; i++) {
 
         // remove leading/trailing spaces from the line
@@ -95,9 +90,8 @@ function validate(file_text = null) {
             }
             else if(lines[i][1] == '?') {
                 // if(i != 0) return false; 
-                if(i != 0) {
-                    valid = false;
-                    errorLines.push(i+1);
+                if(non_empty_line_encountered) {
+                    return [false, i+1]
                 }
             }
             else if(lines[i][1] != '/') {
@@ -113,10 +107,13 @@ function validate(file_text = null) {
                 if(stack.top()[0] == tag_name) stack.pop();
                 // else return false;
                 else {
-                    valid = false;
-                    errorLines.push(i+1);
+                    return [false, i+1]
                 }
             }
+        }
+
+        if(!non_empty_line_encountered && (lines[i].trim().length != 0)){
+            non_empty_line_encountered = true
         }
 
     }
@@ -126,14 +123,15 @@ function validate(file_text = null) {
     // else the xml file is valid and return true
     // if(!stack.isEmpty()) return false;
     if(!stack.isEmpty()) {
-        while(!stack.isEmpty()){
-            valid = false;
-            errorLines.push(stack.top()[1]+1);
-            stack.pop();
-        }
+        return [false, stack.top()[1]+1]
+        // while(!stack.isEmpty()){
+            // valid = false;
+            // errorLines.push(stack.top()[1]+1);
+            // stack.pop();
+        // }
     }
-    errorLines.sort();
-    return [valid, errorLines];
+    // errorLines.sort();
+    return [true, []];
 }
 
 // implement the correct() function, returns string with corrected xml data
@@ -300,3 +298,5 @@ function beautify(file_text = null) {
 
 
 module.exports = {Stack, validate, correct, beautify};
+
+
