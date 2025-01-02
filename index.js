@@ -22,7 +22,6 @@ function createWindow() {
   });
 
   mainWindow.loadFile("index.html");
-
   // Create application menu
   const template = [
     {
@@ -68,6 +67,13 @@ function createWindow() {
           click: () => {
 
             mainWindow.webContents.send('save-file-as');
+          }
+        },
+        {
+          label: 'Format',
+          accelerator: 'CmdOrCtrl+Shift+F',
+          click: () => {
+            mainWindow.webContents.send('format');
           }
         },
         {
@@ -199,6 +205,8 @@ ipcMain.on('minify', (event, content) => {
   });
 });
 
+
+
 ipcMain.on('compress', (event, content) => {
   const encodingObj = encodeXMLTags(content);
   console.log(encodingObj);
@@ -274,7 +282,6 @@ ipcMain.on("render-file", (event, { content, currentFilePath }) => {
     secondWindow.webContents.send("graph-data", graphData);
   });
 
-  secondWindow.webContents.openDevTools();
 });
 
 
@@ -315,7 +322,6 @@ ipcMain.on("algorithms", (event, { content, currentFilePath, type }) => {
   algoWindow.loadFile("./algo.html");
   algoWindow.webContents.once("did-finish-load", () => {
     algoWindow.webContents.send("algorithms", xmlObject, graph, type);
-    algoWindow.openDevTools();
   });
 });
 
