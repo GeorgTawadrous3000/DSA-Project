@@ -22,7 +22,7 @@
 - Writes a list of posts where the given word was mentioned `xml_editor search -w word -i input_file.xml` 
 - Writes a list of posts where the given topic was mentioned `xml_editor search -t topic -i input_file.xml`
 - Writes a list of suggested users for user with id 1 `xml_editor suggest -i input_file.xml -id 1`
-- Draws the input data as a graph in output_file.jpg
+- Draws the input data as a graph in output_file.jpg  `xml_editor draw -i input_file.xml -o output.png`
 - Minifies the input_file.xml and save it in output_file.xml  `xml_editor mini -i input_file.xml -o output_file.xml`
 - Compress the input_file.xml and save the compressed version in output_file.comp  `xml_editor mini -i input_file.xml -o output_file.xml -e EncodingMap.json`
 - Decompress the input_file.comp and save the decompressed version in output_file.xml  `xml_editor mini -i input_file.xml -o output_file.xml -e EncodingMap.json`
