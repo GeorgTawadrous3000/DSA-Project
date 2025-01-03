@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A feature-rich xml parser with CLI and GUI modes",
   "main": "index.js",
+  "bin": { "xml_editor": "./cli.js" },
   "scripts": {
     "start": "electron .",
     "start:cli": "node cli.js",
