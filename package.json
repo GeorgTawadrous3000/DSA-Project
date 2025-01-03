@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "A feature-rich xml parser with CLI and GUI modes",
   "main": "index.js",
-  "bin": { "xml_editor": "./cli.js" },
+  "bin": {
+    "xml_editor": "./cli.js"
+  },
   "scripts": {
     "start": "electron .",
     "postinstall": "npm link",
-    "start:cli": "node cli.js",
     "build": "electron-builder"
   },
   "dependencies": {
@@ -21,5 +22,16 @@
   "devDependencies": {
     "electron-builder": "^22.14.5"
   },
-  "type": "module"
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GeorgTawadrous3000/DSA-Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GeorgTawadrous3000/DSA-Project/issues"
+  },
+  "homepage": "https://github.com/GeorgTawadrous3000/DSA-Project#readme"
 }

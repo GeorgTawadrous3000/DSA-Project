@@ -55,13 +55,13 @@ yargs(hideBin(process.argv))
       if(output && format) {
         const corrected = correct(content)
         const formatted = beautify(corrected)
-        fs.writeFileSync(input, formatted)
+        fs.writeFileSync(output, formatted)
         console.log("formatted and exported to ", output);
-      }
+      } else
       if(output){
         fs.writeFileSync(output, content)
         console.log("validated and exported to ", output);
-      }
+      } else
       if(format){
         const corrected = correct(content)
         const formatted = beautify(corrected)

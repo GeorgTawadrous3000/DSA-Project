@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.on('decompressed', (event, update) => {
     alert("file decompressed successfuly");
     textArea.value = update["content"];
-    updateLineNumbers(validate(textArea.value)[1]);
+    updateLineNumbersNoChecks();
 
     currentFilePath = update["path"];
     isModified = false;
