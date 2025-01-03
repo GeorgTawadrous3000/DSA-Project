@@ -13,7 +13,7 @@
 
 ## CLI Usage
 ### Note:
-`--`: means that this parameter is optional.
+- `--`: means that this parameter is optional.
 - If the output file is not specified then the program modifies the input file
 - In verify command, if `--f` is added, the verify command also formats the xml file.
 
