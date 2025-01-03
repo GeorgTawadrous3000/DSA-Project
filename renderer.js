@@ -20,7 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .join("");
   }
-  
+
+  //to disable validate function if no new lines are used.
+  function updateLineNumbersNoChecks() {
+    const lines = textArea.value.split("\n").length;
+    lineNumbers.innerHTML = Array(lines)
+      .fill("<span></span>")
+      .map((_, i) => `<span>${i + 1}</span>`)
+      .join("");
+  }
 
 
   function modifyCode(content) {
@@ -146,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ipcRenderer.on('minifiedFile', (event, update) => {
     alert("file minified successfuly");
     textArea.value = update["content"];
-    updateLineNumbers(validate(textArea.value)[1]);
+    updateLineNumbersNoChecks();  //to disable validate function if no new lines are used.
 
     currentFilePath = update["path"];
     isModified = false;
