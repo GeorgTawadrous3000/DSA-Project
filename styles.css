@@ -33,4 +33,6 @@ body {
     line-height: 1.5;
     background-color: white;
     overflow-y: auto;
+    white-space: nowrap;
+    overflow-x: auto;
 }
